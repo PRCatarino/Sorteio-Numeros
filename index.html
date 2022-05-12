@@ -17,9 +17,22 @@
       .container{
         width: 650px;
         margin: 0 auto;
-        position: relative;
+      }
+      .sorteio{
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
+      }
+      #sorteados{
+        font-size: 5em;
+        display: flex;
+        flex-wrap: wrap;
+        overflow-y: auto;
+        width: 350px;
+        color:#F272AD;
+        height: 400px;
+      }
+      .itemSorteado{
+        padding-left: 15px;
       }
       .valores{
         display: flex;
@@ -42,12 +55,11 @@
       input:active{
         outline-style:double;
       }
-      #envia{
+      
+      #sortear{
         margin-top:12px;
         width: 110%;
         padding: 5px 2px 5px 2px;
-      
-        
       }
       #resultado{
         font-family: sans-serif;
@@ -93,26 +105,24 @@
   </head>
   <body >
     <img src="logo.png"/>
-  <div class="container">
-    <div class="valores">
-      <label>Valor Inicial</label>
-      <input type="number" id="valorInicial" min="1" value="1"/> 
-
-      <label>Valor Final</label>
-      <input type="number" id="valorFinal" min="2" value="100"/> 
-
-      <label> Rodadas</label>
-      <input type="number" id="rodadas" min="1" placeholder="rodadas" value="5"/>
-
-      <audio loop src="roletaSound.mp3"></audio>
-
-      <button id="envia">Envia</button>
-      
-      <p id="resultado"></p>
-
+    <div class="container">
+      <div class="sorteio">
+        <div class="valores">
+          <label>Valor Inicial</label>
+          <input type="number" id="valorInicial" min="1" value="1"/> 
+          <label>Valor Final</label>
+          <input type="number" id="valorFinal" min="2" value="100"/> 
+          <label> Rodadas</label>
+          <input type="number" id="rodadas" min="1" placeholder="rodadas" value="5"/>
+          <audio loop src="roletaSound.mp3"></audio>
+          <button id="sortear">Sortear</button>
+          <p id="resultado"></p>
+        </div>
+        <div id="sorteados"></div>
+      </div>
     </div>
-  </div>
   <script>
+    const listaSorteada = []
     let rodadaAtual = 0;
     let valorIncial = 0;
     let valorFinal =  0;
@@ -120,20 +130,20 @@
     
     function validarTela( valorInicial , valorFinal , rodadas ){
       if(valorIncial > valorFinal){
-        alert(" valor inicial maior do que valor final")
+        alert(" valor inicial maior do que valor final");
         return false;
       }
       return true
     }
 
     function iniciarAudio(){
-      const audio = document.querySelector('audio')
+      const audio = document.querySelector('audio');
       audio.play();
 
     }
 
     function pararAudio(){
-      const audio = document.querySelector('audio')
+      const audio = document.querySelector('audio');
       audio.pause();
     }
     function sortearNumero(){
@@ -143,8 +153,8 @@
         valorIncial = document.querySelector("#valorInicial").value * 1;
         valorFinal = document.querySelector("#valorFinal").value * 1;
         rodadas = document.querySelector("#rodadas").value * 1;
-        document.querySelector("#envia").disabled = true
-        iniciarAudio()
+        document.querySelector("#sortear").disabled = true;
+        iniciarAudio();;
 
 
 
@@ -154,7 +164,6 @@
         }
       }
       
-      
       rodadaAtual++
       
       
@@ -163,19 +172,44 @@
       
       document.querySelector("#resultado").innerHTML = numeroAleatorio; 
 
+
+
+
       if(rodadaAtual <= rodadas ){
         setTimeout(sortearNumero, 60)  
-        console.log(rodadaAtual) 
+       
       }else{
+       
+       if(listaSorteada.indexOf(numeroAleatorio) > -1 ) {
+         setTimeout(sortearNumero, 60)  
+         console.log(numeroAleatorio)
+         return;
+       }
+       
         valorIncial = 0;
         valorFinal = 0;
         rodadas = 0;
         rodadaAtual = 0;  
-        document.querySelector("#envia").disabled = false;
+        
+    
+        listaSorteada.push(numeroAleatorio);
+        escreverNumero();
+
+
+        document.querySelector("#sortear").disabled = false;
         pararAudio();
       }
     }
-    document.querySelector("#envia").addEventListener("click", sortearNumero)  
+
+    function escreverNumero(){
+      document.querySelector("#sorteados").innerHTML = null
+      listaSorteada.forEach(item =>{
+        document.querySelector("#sorteados").innerHTML = `<div class="itemSorteado">${item}</div> ${document.querySelector("#sorteados").innerHTML}`      
+      }) 
+    }
+
+
+    document.querySelector("#sortear").addEventListener("click", sortearNumero);  
 
   </script>
   </body>
